@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import argparse
 import sys
+import urllib3
+
+urllib3.disable_warnings()
 
 visited = set()
 
@@ -27,6 +30,7 @@ def crawl(url, scope):
     soup = BeautifulSoup(response.text, 'html.parser')
     for a_tag in soup.find_all('a', href=True):
         link = urljoin(url, a_tag['href'])
+        print(link)
         if is_in_scope(link, scope):
             crawl(link, scope)
 
