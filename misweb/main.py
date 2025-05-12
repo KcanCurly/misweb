@@ -5,27 +5,13 @@ import argparse
 import sys
 import urllib3
 
+from misweb.checkgetpost import extract_forms
+from misweb.utilities import is_in_scope
+
 urllib3.disable_warnings()
 
 visited = set()
 
-def is_in_scope(url, scope):
-    parsed_url = urlparse(url)
-    return scope in parsed_url.netloc
-
-def extract_forms(soup, base_url):
-    forms = soup.find_all('form')
-    for i, form in enumerate(forms, 1):
-        action = form.get('action')
-        method = form.get('method', 'GET').upper()
-        full_action = urljoin(base_url, action)
-        inputs = form.find_all('input')
-        input_names = [inp.get('name') for inp in inputs if inp.get('name')]
-
-        print(f"\n[FORM {i}]")
-        print(f"  Action: {full_action}")
-        print(f"  Method: {method}")
-        print(f"  Inputs: {input_names}")
 
 
 def crawl(url, scope):
@@ -47,7 +33,6 @@ def crawl(url, scope):
 
     for a_tag in soup.find_all('a', href=True):
         link = urljoin(url, a_tag['href'])
-        print(link)
         if is_in_scope(link, scope):
             crawl(link, scope)
 
